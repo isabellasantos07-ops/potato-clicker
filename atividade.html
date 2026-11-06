@@ -1,32 +1,87 @@
-<!DOCTYPE html> 
-<html lang="pt-br"> 
-<head> 
-    <meta charset="utf-8"> 
-    <title>teste</title> 
-    <style type="text/css"> 
-        body { 
-            background-color: rgb(241, 230, 217); 
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
-            color: rgb(139, 66, 66); 
-            font-size: 125%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 50vh; 
-            margin: 0; 
-        } 
-        .center { 
-            text-align: center; 
-        } 
-    </style> 
-</head> 
-<body> 
-    <div class="center"> 
-        <h1>bem-vindo ao jogo potato clicker</h1> 
-        <h3>clique na batata para entrar</h3> 
-                <a href="game.html"> 
-            <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" width="100"> 
-        </a> 
-    </div> 
-</body> 
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Potato Clicker - Início</title>
+    <style type="text/css">
+        body {
+            background-color: rgb(241, 230, 217);
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: rgb(139, 66, 66);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        .menu-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(139, 66, 66, 0.15);
+            max-width: 400px;
+            width: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: normal;
+            opacity: 0.85;
+            margin: 0 0 30px 0;
+        }
+
+        .start-link {
+            display: inline-block;
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            text-decoration: none;
+            padding: 10px;
+        }
+
+        .start-link img {
+            width: 160px;
+            height: auto;
+            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease;
+        }
+
+        .start-link:hover img {
+            transform: scale(1.1) translateY(-5px);
+            filter: drop-shadow(0 15px 20px rgba(139, 66, 66, 0.25));
+        }
+
+        .start-link:active img {
+            transform: scale(0.95) translateY(0);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+        <h1>Potato Clicker</h1>
+        <h3>Clique na batata para começar</h3>
+        
+        <a href="game.html" class="start-link">
+            <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Iniciar Jogo">
+        </a>
+    </div>
+
+</body>
 </html>
