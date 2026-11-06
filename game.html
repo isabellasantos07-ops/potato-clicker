@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Potato Clicker Extremo</title>
+    <style type="text/css">
+        body {
+            background-color: rgb(241, 230, 217);
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: rgb(139, 66, 66);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none; 
+        }
+
+        .game-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(139, 66, 66, 0.15);
+            max-width: 700px;
+            width: 90%;
+            gap: 40px;
+        }
+
+        .clicker-section {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shop-section {
+            flex: 1;
+            border-left: 3px dashed rgb(212, 191, 166);
+            padding-left: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+        }
+
+        .score-container {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .pps-container {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 25px;
+        }
+
+        .batata-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.1s ease;
+            padding: 10px;
+        }
+
+        .batata-btn img {
+            width: 160px;
+            height: auto;
+            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
+            transition: filter 0.1s ease;
+        }
+
+        .batata-btn:hover img {
+            transform: scale(1.05);
+            filter: drop-shadow(0 12px 15px rgba(0,0,0,0.2));
+        }
+
+        .batata-btn:active img {
+            transform: scale(0.92);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .shop-item {
+            background: rgb(255, 255, 255);
+            border: 2px solid rgb(139, 66, 66);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .shop-item:hover {
+            background: rgb(139, 66, 66);
+            color: white;
+        }
+
+        .shop-item:active {
+            transform: scale(0.98);
+        }
+
+        .shop-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #eee !important;
+            color: #999 !important;
+            border-color: #aaa !important;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .item-effect {
+            font-size: 0.8rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .item-cost {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        
+        <div class="clicker-section">
+            <h1>Potato Clicker</h1>
+            <div class="score-container"><span id="score">0</span>🥔</div>
+            <div class="pps-container">por segundo: <span id="pps">0</span></div>
+            
+            <button class="batata-btn" id="potatoBtn">
+                <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Batata Suprema">
+            </button>
+        </div>
+
+        <div class="shop-section">
+            <h2>Lojinha da Batata</h2>
+            
+            <div class="shop-item disabled" id="upgrade1" data-cost="15" data-pps="0.5">
+                <div class="item-info">
+                    <span class="item-name">Descascador Rápido</span>
+                    <span class="item-effect">+0.5 purê/seg</span>
+                </div>
+                <div class="item-cost"><span class="cost-val">15</span> 🥔</div>
+            </div>
+
+            <div class="shop-item disabled" id="upgrade2" data-cost="100" data-pps="4">
+                <div class="item-info">
+                    <span class="item-name">Chef de Cozinha</span>
+                    <span class="item-effect">+4.0 purê/seg</span>
+                </div>
+                <div class="item-cost"><span class="cost-val">100</span> 🥔</div>
+            </div>
+
+            <div class="shop-item disabled" id="upgrade3" data-cost="500" data-pps="32">
+                <div class="item-info">
+                    <span class="item-name">Plantação Industrial</span>
+                    <span class="item-effect">+32.0 purê/seg</span>
+                </div>
+                <div class="item-cost"><span class="cost-val">500</span> 🥔</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let score = 0;
+        let pps = 0;
+
+        const scoreSpan = document.getElementById('score');
+        const ppsSpan = document.getElementById('pps');
+        const potatoBtn = document.getElementById('potatoBtn');
+        const upgrades = document.querySelectorAll('.shop-item');
+
+        function updateUI() {
+            scoreSpan.textContent = Math.floor(score);
+            ppsSpan.textContent = pps.toFixed(1);
+
+            upgrades.forEach(upgrade => {
+                const cost = parseFloat(upgrade.getAttribute('data-cost'));
+                if (score >= cost) {
+                    upgrade.classList.remove('disabled');
+                } else {
+                    upgrade.classList.add('disabled');
+                }
+            });
+        }
+
+        potatoBtn.addEventListener('click', () => {
+            score += 1;
+            updateUI();
+        });
+
+        upgrades.forEach(upgrade => {
+            upgrade.addEventListener('click', () => {
+                const cost = parseFloat(upgrade.getAttribute('data-cost'));
+                const addedPps = parseFloat(upgrade.getAttribute('data-pps'));
+
+                if (score >= cost) {
+                    score -= cost;
+                    pps += addedPps;
+
+                    const nextCost = Math.ceil(cost * 1.15);
+                    upgrade.setAttribute('data-cost', nextCost);
+                    upgrade.querySelector('.cost-val').textContent = nextCost;
+
+                    updateUI();
+                }
+            });
+        });
+
+        setInterval(() => {
+            if (pps > 0) {
+                score += pps / 10;
+                updateUI();
+            }
+        }, 100);
+    </script>
+
+</body>
+</html>
