@@ -2,206 +2,437 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
-    <title>Potato Clicker Extremo</title>
-    <style type="text/css">
-        body {
-            background-color: rgb(241, 230, 217);
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            color: rgb(139, 66, 66);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+    <title>Potato Clicker</title>
+    <style>
+        * {
             margin: 0;
-            user-select: none; 
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
         }
 
-        .game-container {
+        body {
+            background: #c9a87c;
+            background-image: repeating-linear-gradient(
+                90deg,
+                rgba(80, 50, 20, 0.08) 0px,
+                rgba(80, 50, 20, 0.08) 1px,
+                transparent 1px,
+                transparent 9px
+            );
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #3e2a1a;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(139, 66, 66, 0.15);
-            max-width: 700px;
-            width: 90%;
-            gap: 40px;
-        }
-
-        .clicker-section {
-            flex: 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: center;
         }
 
-        .shop-section {
-            flex: 1;
-            border-left: 3px dashed rgb(212, 191, 166);
-            padding-left: 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        /* ===== MENU ===== */
+        #menuScreen {
+            width: 480px;
+            background: #e8d5b5;
+            border: 12px solid #8b5e3c;
+            box-shadow: 
+                inset 0 0 0 3px #c49a6c,
+                inset 0 0 0 6px #5c3d26,
+                0 0 40px rgba(0,0,0,0.4);
+            padding: 50px 40px;
+            text-align: center;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin: 0 0 10px 0;
+        #menuScreen h1 {
+            font-size: 2.6rem;
+            margin: 10px 0 8px 0;
+            text-shadow: 2px 2px 0 #8b5e3c;
         }
 
-        .score-container {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
+        #menuScreen h3 {
+            font-size: 1.1rem;
+            font-weight: normal;
+            opacity: 0.85;
+            margin-bottom: 30px;
+            color: #5c3d26;
         }
 
-        .pps-container {
-            font-size: 1rem;
-            opacity: 0.8;
-            margin-bottom: 25px;
+        .bakery-name {
+            background: #8b5e3c;
+            border: 3px solid #c49a6c;
+            padding: 8px 25px;
+            border-radius: 4px;
+            font-size: 1.3rem;
+            color: #f8f0e0;
+            box-shadow: 0 3px 0 #5c3d26;
+            display: inline-block;
+            margin-bottom: 15px;
         }
 
-        .batata-btn {
+        .potato-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .potato-glow {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255, 220, 140, 0.5) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #startBtn {
             background: none;
             border: none;
             cursor: pointer;
-            outline: none;
-            transition: transform 0.1s ease;
-            padding: 10px;
+            position: relative;
+            z-index: 2;
         }
 
-        .batata-btn img {
-            width: 160px;
-            height: auto;
-            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
-            transition: filter 0.1s ease;
+        #startBtn img {
+            width: 190px;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.35));
+            border-radius: 50%;
+            transition: transform 0.15s;
         }
 
-        .batata-btn:hover img {
-            transform: scale(1.05);
-            filter: drop-shadow(0 12px 15px rgba(0,0,0,0.2));
+        #startBtn:hover img {
+            transform: scale(1.08);
         }
 
-        .batata-btn:active img {
-            transform: scale(0.92);
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        #startBtn:active img {
+            transform: scale(0.94);
         }
 
-        h2 {
-            font-size: 1.3rem;
-            margin: 0 0 15px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .hint {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+            color: #5c3d26;
+        }
+
+        /* ===== JOGO ===== */
+        #gameScreen {
+            display: none;
+            width: 1100px;
+            height: 620px;
+            background: #e8d5b5;
+            border: 12px solid #8b5e3c;
+            box-shadow: 
+                inset 0 0 0 3px #c49a6c,
+                inset 0 0 0 6px #5c3d26,
+                0 0 40px rgba(0,0,0,0.4);
+        }
+
+        .game-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-panel {
+            width: 380px;
+            background: radial-gradient(circle at center, #f5e6c8 0%, #d4b48c 70%);
+            border-right: 8px solid #8b5e3c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .score {
+            font-size: 2.4rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #8b5e3c;
+            margin-bottom: 5px;
+        }
+
+        .pps {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 40px;
+            color: #5c3d26;
+        }
+
+        .potato-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+
+        .potato-btn img {
+            width: 200px;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.35));
+            border-radius: 50%;
+            transition: transform 0.08s;
+        }
+
+        .potato-btn:active img {
+            transform: scale(0.94);
+        }
+
+        .floating-number {
+            position: absolute;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #fff8e7;
+            text-shadow: 2px 2px 0 #5c3d26;
+            pointer-events: none;
+            z-index: 10;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, -20px) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
+        }
+
+        .right-panel {
+            flex: 1;
+            background: #dcc9a3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .store-header {
+            background: linear-gradient(to bottom, #a67c52, #8b5e3c);
+            border-bottom: 4px solid #5c3d26;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            color: #f8f0e0;
+            text-shadow: 1px 1px 0 #3e2a1a;
+        }
+
+        .store-content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .shop-item {
-            background: rgb(255, 255, 255);
-            border: 2px solid rgb(139, 66, 66);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
+            background: linear-gradient(to bottom, #f0e0c0, #e0c9a0);
+            border: 2px solid #a67c52;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 3px 0 #8b5e3c;
+            transition: all 0.15s;
         }
 
-        .shop-item:hover {
-            background: rgb(139, 66, 66);
-            color: white;
-        }
-
-        .shop-item:active {
-            transform: scale(0.98);
+        .shop-item:hover:not(.disabled) {
+            background: linear-gradient(to bottom, #f8ecd8, #e8d4b0);
         }
 
         .shop-item.disabled {
             opacity: 0.5;
+            filter: grayscale(0.4);
             cursor: not-allowed;
-            background: #eee !important;
-            color: #999 !important;
-            border-color: #aaa !important;
         }
 
-        .item-info {
-            display: flex;
-            flex-direction: column;
+        .item-name { font-weight: bold; }
+        .item-effect { font-size: 0.8rem; opacity: 0.85; font-style: italic; }
+        .item-cost { font-weight: bold; color: #b8860b; }
+
+        .save-info {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 0.75rem;
+            opacity: 0.6;
         }
 
-        .item-name {
-            font-weight: bold;
-            font-size: 1.05rem;
+        .store-content::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .item-effect {
-            font-size: 0.8rem;
-            font-style: italic;
-            opacity: 0.9;
+        .store-content::-webkit-scrollbar-track {
+            background: #d4b48c;
         }
-
-        .item-cost {
-            font-weight: bold;
-            font-size: 1.1rem;
+        .store-content::-webkit-scrollbar-thumb {
+            background: #8b5e3c;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
-        
-        <div class="clicker-section">
-            <h1>Potato Clicker</h1>
-            <div class="score-container"><span id="score">0</span>🥔</div>
-            <div class="pps-container">por segundo: <span id="pps">0</span></div>
-            
-            <button class="batata-btn" id="potatoBtn">
-                <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Batata Suprema">
+    <!-- MENU -->
+    <div id="menuScreen">
+        <div class="bakery-name">Batataria do Papagaio Guloso</div>
+        <h1>Potato Clicker</h1>
+        <h3>Clique na batata para começar</h3>
+
+        <div class="potato-container">
+            <div class="potato-glow"></div>
+            <button id="startBtn">
+                <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Começar">
             </button>
         </div>
+        <div class="hint">Clique na batata para entrar</div>
+    </div>
 
-        <div class="shop-section">
-            <h2>Lojinha da Batata</h2>
-            
-            <div class="shop-item disabled" id="upgrade1" data-cost="15" data-pps="0.5">
-                <div class="item-info">
-                    <span class="item-name">Descascador Rápido</span>
-                    <span class="item-effect">+0.5 purê/seg</span>
+    <!-- JOGO -->
+    <div id="gameScreen">
+        <div class="game-wrapper">
+            <div class="left-panel">
+                <div class="bakery-name">Batataria do Papagaio Guloso</div>
+                <div class="score"><span id="score">0</span> 🥔</div>
+                <div class="pps">por segundo: <span id="pps">0.0</span></div>
+
+                <div class="potato-container" id="potatoContainer">
+                    <div class="potato-glow"></div>
+                    <button class="potato-btn" id="potatoBtn">
+                        <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Batata">
+                    </button>
                 </div>
-                <div class="item-cost"><span class="cost-val">15</span> 🥔</div>
+                <div class="save-info">Progresso salvo automaticamente</div>
             </div>
 
-            <div class="shop-item disabled" id="upgrade2" data-cost="100" data-pps="4">
-                <div class="item-info">
-                    <span class="item-name">Chef de Cozinha</span>
-                    <span class="item-effect">+4.0 purê/seg</span>
-                </div>
-                <div class="item-cost"><span class="cost-val">100</span> 🥔</div>
-            </div>
+            <div class="right-panel">
+                <div class="store-header">Loja</div>
+                <div class="store-content">
+                    <div class="shop-item disabled" id="upgrade1" data-cost="15" data-pps="0.5">
+                        <div>
+                            <div class="item-name">Descascador Rápido</div>
+                            <div class="item-effect">+0.5 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">15</span> 🥔</div>
+                    </div>
 
-            <div class="shop-item disabled" id="upgrade3" data-cost="500" data-pps="32">
-                <div class="item-info">
-                    <span class="item-name">Plantação Industrial</span>
-                    <span class="item-effect">+32.0 purê/seg</span>
+                    <div class="shop-item disabled" id="upgrade2" data-cost="100" data-pps="4">
+                        <div>
+                            <div class="item-name">Chef de Cozinha</div>
+                            <div class="item-effect">+4 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">100</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade3" data-cost="500" data-pps="15">
+                        <div>
+                            <div class="item-name">Plantação Industrial</div>
+                            <div class="item-effect">+15 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">500</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade4" data-cost="2000" data-pps="50">
+                        <div>
+                            <div class="item-name">Forno de Batata</div>
+                            <div class="item-effect">+50 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">2000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade5" data-cost="10000" data-pps="200">
+                        <div>
+                            <div class="item-name">Máquina de Purê</div>
+                            <div class="item-effect">+200 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">10000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade6" data-cost="50000" data-pps="800">
+                        <div>
+                            <div class="item-name">Fábrica de Fritas</div>
+                            <div class="item-effect">+800 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">50000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade7" data-cost="250000" data-pps="3500">
+                        <div>
+                            <div class="item-name">Império da Batata</div>
+                            <div class="item-effect">+3500 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">250000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade8" data-cost="1000000" data-pps="15000">
+                        <div>
+                            <div class="item-name">Planeta Batata</div>
+                            <div class="item-effect">+15000 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">1000000</span> 🥔</div>
+                    </div>
                 </div>
-                <div class="item-cost"><span class="cost-val">500</span> 🥔</div>
             </div>
         </div>
-
     </div>
 
     <script>
         let score = 0;
         let pps = 0;
+        let clickValue = 1;
+
+        const menuScreen = document.getElementById('menuScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const startBtn = document.getElementById('startBtn');
 
         const scoreSpan = document.getElementById('score');
         const ppsSpan = document.getElementById('pps');
         const potatoBtn = document.getElementById('potatoBtn');
+        const potatoContainer = document.getElementById('potatoContainer');
         const upgrades = document.querySelectorAll('.shop-item');
 
+        startBtn.addEventListener('click', () => {
+            menuScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            loadGame();
+        });
+
+        function saveGame() {
+            const saveData = {
+                score: score,
+                pps: pps,
+                clickValue: clickValue,
+                upgrades: []
+            };
+
+            upgrades.forEach(upgrade => {
+                saveData.upgrades.push({
+                    id: upgrade.id,
+                    cost: upgrade.getAttribute('data-cost')
+                });
+            });
+
+            localStorage.setItem('potatoClickerSave', JSON.stringify(saveData));
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('potatoClickerSave');
+            if (!saved) return;
+
+            const saveData = JSON.parse(saved);
+            score = saveData.score || 0;
+            pps = saveData.pps || 0;
+            clickValue = saveData.clickValue || 1;
+
+            if (saveData.upgrades) {
+                saveData.upgrades.forEach(savedUp => {
+                    const upgrade = document.getElementById(savedUp.id);
+                    if (upgrade) {
+                        upgrade.setAttribute('data-cost', savedUp.cost);
+                        upgrade.querySelector('.cost-val').textContent = Number(savedUp.cost).toLocaleString('pt-BR');
+                    }
+                });
+            }
+            updateUI();
+        }
+
         function updateUI() {
-            scoreSpan.textContent = Math.floor(score);
+            scoreSpan.textContent = Math.floor(score).toLocaleString('pt-BR');
             ppsSpan.textContent = pps.toFixed(1);
 
             upgrades.forEach(upgrade => {
@@ -214,13 +445,30 @@
             });
         }
 
-        potatoBtn.addEventListener('click', () => {
-            score += 1;
+        function createFloatingNumber(amount, x, y) {
+            const floater = document.createElement('div');
+            floater.className = 'floating-number';
+            floater.textContent = '+' + amount;
+            floater.style.left = x + 'px';
+            floater.style.top = y + 'px';
+            potatoContainer.appendChild(floater);
+            setTimeout(() => floater.remove(), 800);
+        }
+
+        potatoBtn.addEventListener('click', (e) => {
+            score += clickValue;
             updateUI();
+
+            const rect = potatoContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            createFloatingNumber(clickValue, x, y);
         });
 
         upgrades.forEach(upgrade => {
             upgrade.addEventListener('click', () => {
+                if (upgrade.classList.contains('disabled')) return;
+
                 const cost = parseFloat(upgrade.getAttribute('data-cost'));
                 const addedPps = parseFloat(upgrade.getAttribute('data-pps'));
 
@@ -230,12 +478,16 @@
 
                     const nextCost = Math.ceil(cost * 1.15);
                     upgrade.setAttribute('data-cost', nextCost);
-                    upgrade.querySelector('.cost-val').textContent = nextCost;
+                    upgrade.querySelector('.cost-val').textContent = nextCost.toLocaleString('pt-BR');
 
                     updateUI();
+                    saveGame();
                 }
             });
         });
+
+        setInterval(saveGame, 5000);
+        window.addEventListener('beforeunload', saveGame);
 
         setInterval(() => {
             if (pps > 0) {
@@ -244,6 +496,5 @@
             }
         }, 100);
     </script>
-
 </body>
 </html>
