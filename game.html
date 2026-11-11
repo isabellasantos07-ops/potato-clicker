@@ -376,6 +376,10 @@
         let pps = 0;
         let clickValue = 1;
 
+        // Bônus temporários
+        let clickMultiplier = 1;
+        let discountRate = 0; // 0 = sem desconto, 0.30 = 30% de desconto
+
         let upgradeCounts = {
             upgrade1: 0,
             upgrade2: 0,
@@ -404,6 +408,7 @@
             gameScreen.style.display = 'block';
             loadGame();
             updateHands();
+            startBonusSpawner();
         });
 
         function saveGame() {
@@ -443,7 +448,6 @@
                     const upgrade = document.getElementById(savedUp.id);
                     if (upgrade) {
                         upgrade.setAttribute('data-cost', savedUp.cost);
-                        upgrade.querySelector('.cost-val').textContent = Number(savedUp.cost).toLocaleString('pt-BR');
                     }
                 });
             }
@@ -451,13 +455,28 @@
             updateHands();
         }
 
+        function getDiscountedCost(baseCost) {
+            return Math.ceil(baseCost * (1 - discountRate));
+        }
+
         function updateUI() {
             scoreSpan.textContent = Math.floor(score).toLocaleString('pt-BR');
             ppsSpan.textContent = pps.toFixed(1);
 
             upgrades.forEach(upgrade => {
-                const cost = parseFloat(upgrade.getAttribute('data-cost'));
-                if (score >= cost) {
+                const baseCost = parseFloat(upgrade.getAttribute('data-cost'));
+                const actualCost = getDiscountedCost(baseCost);
+                
+                const costSpan = upgrade.querySelector('.cost-val');
+                costSpan.textContent = actualCost.toLocaleString('pt-BR');
+
+                if (discountRate > 0) {
+                    costSpan.style.color = '#2e7d32'; // Verde indicando desconto
+                } else {
+                    costSpan.style.color = '#b8860b';
+                }
+
+                if (score >= actualCost) {
                     upgrade.classList.remove('disabled');
                 } else {
                     upgrade.classList.add('disabled');
@@ -465,21 +484,20 @@
             });
         }
 
-        function createFloatingNumber(amount, x, y) {
+        function createFloatingNumber(amount, x, y, customText = null, isBad = false) {
             const floater = document.createElement('div');
             floater.className = 'floating-number';
-            floater.textContent = '+' + amount;
+            floater.textContent = customText || ('+' + amount);
+            if (isBad) floater.style.color = '#ff4d4d';
             floater.style.left = x + 'px';
             floater.style.top = y + 'px';
             potatoContainer.appendChild(floater);
             setTimeout(() => floater.remove(), 800);
         }
 
-        // Atualiza as mãos organizando-as em fileiras concêntricas (anéis)
         function updateHands() {
             document.querySelectorAll('.hand').forEach(h => h.remove());
 
-            // Cria uma lista flat de todas as mãos por tipo de upgrade
             const handList = [];
             Object.keys(upgradeCounts).forEach(upgradeId => {
                 const count = upgradeCounts[upgradeId];
@@ -488,15 +506,14 @@
                 }
             });
 
-            const baseRadius = 110;    // Distância do 1º anel ao centro
-            const ringSpacing = 16;   // Distância entre cada fileira/anel
-            const handsPerRingBase = 20; // Capacidade máxima de mãos na 1ª fileira
+            const baseRadius = 110;
+            const ringSpacing = 16;
+            const handsPerRingBase = 20;
 
             let handsPlacedInCurrentRing = 0;
             let currentRing = 0;
 
-            handList.forEach((upgradeId, index) => {
-                // Quantas mãos cabem no anel atual (aneis mais externos cabem mais mãos)
+            handList.forEach((upgradeId) => {
                 const currentRingCapacity = handsPerRingBase + (currentRing * 6);
 
                 const hand = document.createElement('div');
@@ -506,10 +523,7 @@
                 img.src = HAND_IMAGE;
                 hand.appendChild(img);
 
-                // Distância do anel atual
                 const distance = baseRadius + (currentRing * ringSpacing);
-                
-                // Ângulo uniforme dentro do anel atual
                 const angle = (handsPlacedInCurrentRing / currentRingCapacity) * 360;
 
                 hand.style.setProperty('--start-angle', `${angle}deg`);
@@ -519,7 +533,6 @@
                 potatoContainer.appendChild(hand);
 
                 handsPlacedInCurrentRing++;
-                // Quando o anel atual enche, passa para a próxima fileira
                 if (handsPlacedInCurrentRing >= currentRingCapacity) {
                     handsPlacedInCurrentRing = 0;
                     currentRing++;
@@ -527,7 +540,76 @@
             });
         }
 
-        // CSS com suporte a distâncias variáveis por fileira
+        // ===== SISTEMA DE BÔNUS QUE CAEM =====
+        function spawnBonus() {
+            const types = ['discount', 'double', 'bad'];
+            const chosenType = types[Math.floor(Math.random() * types.length)];
+
+            const bonusElem = document.createElement('div');
+            bonusElem.className = `falling-bonus ${chosenType}`;
+
+            // Posição horizontal aleatória no jogo
+            const randomX = Math.random() * (gameScreen.clientWidth - 60);
+            bonusElem.style.left = randomX + 'px';
+
+            let icon = '🥔';
+            if (chosenType === 'discount') icon = '🏷️';
+            if (chosenType === 'double') icon = '⚡';
+            if (chosenType === 'bad') icon = '🤢';
+
+            bonusElem.textContent = icon;
+            gameScreen.appendChild(bonusElem);
+
+            // Clique no Bônus
+            bonusElem.addEventListener('click', () => {
+                if (chosenType === 'discount') {
+                    discountRate = 0.30; // 30% de desconto
+                    showBanner("🏷️ 30% DE DESCONTO NOS UPGRADES POR 15s!");
+                    setTimeout(() => {
+                        discountRate = 0;
+                        updateUI();
+                    }, 15000);
+                } else if (chosenType === 'double') {
+                    clickMultiplier = 2;
+                    showBanner("⚡ 2X CLIQUES DUPLOS POR 15s!");
+                    setTimeout(() => {
+                        clickMultiplier = 1;
+                    }, 15000);
+                } else if (chosenType === 'bad') {
+                    const lossPercents = [0.05, 0.10, 0.25];
+                    const lossPercent = lossPercents[Math.floor(Math.random() * lossPercents.length)];
+                    const lostAmount = Math.floor(score * lossPercent);
+                    score -= lostAmount;
+                    showBanner(`🤢 BATATA PO podre! Perdeu ${(lossPercent * 100)}% (${lostAmount.toLocaleString('pt-BR')} 🥔)`, true);
+                }
+
+                updateUI();
+                bonusElem.remove();
+            });
+
+            // Remove o bônus se ele cair fora da tela sem ser clicado
+            setTimeout(() => {
+                if (bonusElem.parentNode) bonusElem.remove();
+            }, 6000);
+        }
+
+        function startBonusSpawner() {
+            // Spawna um bônus aleatório a cada 15 a 30 segundos
+            setInterval(() => {
+                spawnBonus();
+            }, Math.random() * 15000 + 15000);
+        }
+
+        function showBanner(text, isBad = false) {
+            const banner = document.createElement('div');
+            banner.className = 'bonus-banner';
+            if (isBad) banner.style.background = '#8b0000';
+            banner.textContent = text;
+            gameScreen.appendChild(banner);
+            setTimeout(() => banner.remove(), 3000);
+        }
+
+        // Styles injetados
         const style = document.createElement('style');
         style.textContent = `
             .hand {
@@ -556,35 +638,88 @@
                     transform: rotate(calc(var(--start-angle) + 360deg)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
                 }
             }
+
+            /* CSS dos Bônus caindo */
+            .falling-bonus {
+                position: absolute;
+                top: -50px;
+                width: 45px;
+                height: 45px;
+                font-size: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                cursor: pointer;
+                z-index: 100;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                animation: fallDown 6s linear forwards;
+            }
+
+            .falling-bonus.discount { background: #ffd700; border: 2px solid #b8860b; }
+            .falling-bonus.double { background: #00bfff; border: 2px solid #005f9e; }
+            .falling-bonus.bad { background: #8b0000; border: 2px solid #4a0000; }
+
+            .falling-bonus:hover {
+                transform: scale(1.2);
+            }
+
+            @keyframes fallDown {
+                0% { top: -50px; }
+                100% { top: 650px; }
+            }
+
+            .bonus-banner {
+                position: absolute;
+                top: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #2e7d32;
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 6px;
+                font-weight: bold;
+                z-index: 200;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+                animation: fadeInOut 3s ease forwards;
+            }
+
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translate(-50%, -20px); }
+                15% { opacity: 1; transform: translate(-50%, 0); }
+                85% { opacity: 1; transform: translate(-50%, 0); }
+                100% { opacity: 0; transform: translate(-50%, -20px); }
+            }
         `;
         document.head.appendChild(style);
 
         potatoBtn.addEventListener('click', (e) => {
-            score += clickValue;
+            const addedScore = clickValue * clickMultiplier;
+            score += addedScore;
             updateUI();
 
             const rect = potatoContainer.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            createFloatingNumber(clickValue, x, y);
+            createFloatingNumber(addedScore, x, y);
         });
 
         upgrades.forEach(upgrade => {
             upgrade.addEventListener('click', () => {
                 if (upgrade.classList.contains('disabled')) return;
 
-                const cost = parseFloat(upgrade.getAttribute('data-cost'));
+                const baseCost = parseFloat(upgrade.getAttribute('data-cost'));
+                const actualCost = getDiscountedCost(baseCost);
                 const addedPps = parseFloat(upgrade.getAttribute('data-pps'));
 
-                if (score >= cost) {
-                    score -= cost;
+                if (score >= actualCost) {
+                    score -= actualCost;
                     pps += addedPps;
 
                     upgradeCounts[upgrade.id]++;
 
-                    const nextCost = Math.ceil(cost * 1.15);
-                    upgrade.setAttribute('data-cost', nextCost);
-                    upgrade.querySelector('.cost-val').textContent = nextCost.toLocaleString('pt-BR');
+                    const nextBaseCost = Math.ceil(baseCost * 1.15);
+                    upgrade.setAttribute('data-cost', nextBaseCost);
 
                     updateUI();
                     updateHands();
@@ -593,10 +728,11 @@
             });
         });
 
+        // Mãos clicando consideram o multiplicador ativado
         setInterval(() => {
             const totalHands = Object.values(upgradeCounts).reduce((a, b) => a + b, 0);
             if (totalHands > 0) {
-                score += clickValue * totalHands;
+                score += (clickValue * totalHands) * clickMultiplier;
                 updateUI();
             }
         }, 1000);
