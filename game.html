@@ -371,10 +371,21 @@
         </div>
     </div>
 
-    <script>
+<script>
         let score = 0;
         let pps = 0;
         let clickValue = 1;
+
+        let upgradeCounts = {
+            upgrade1: 0,
+            upgrade2: 0,
+            upgrade3: 0,
+            upgrade4: 0,
+            upgrade5: 0,
+            upgrade6: 0,
+            upgrade7: 0,
+            upgrade8: 0
+        };
 
         const menuScreen = document.getElementById('menuScreen');
         const gameScreen = document.getElementById('gameScreen');
@@ -386,10 +397,13 @@
         const potatoContainer = document.getElementById('potatoContainer');
         const upgrades = document.querySelectorAll('.shop-item');
 
+        const HAND_IMAGE = "https://em-content.zobj.net/source/apple/76/white-up-pointing-backhand-index_1f446.png";
+
         startBtn.addEventListener('click', () => {
             menuScreen.style.display = 'none';
             gameScreen.style.display = 'block';
             loadGame();
+            updateHands();
         });
 
         function saveGame() {
@@ -397,6 +411,7 @@
                 score: score,
                 pps: pps,
                 clickValue: clickValue,
+                upgradeCounts: upgradeCounts,
                 upgrades: []
             };
 
@@ -419,6 +434,10 @@
             pps = saveData.pps || 0;
             clickValue = saveData.clickValue || 1;
 
+            if (saveData.upgradeCounts) {
+                upgradeCounts = saveData.upgradeCounts;
+            }
+
             if (saveData.upgrades) {
                 saveData.upgrades.forEach(savedUp => {
                     const upgrade = document.getElementById(savedUp.id);
@@ -429,6 +448,7 @@
                 });
             }
             updateUI();
+            updateHands();
         }
 
         function updateUI() {
@@ -455,6 +475,90 @@
             setTimeout(() => floater.remove(), 800);
         }
 
+        // Atualiza as mãos organizando-as em fileiras concêntricas (anéis)
+        function updateHands() {
+            document.querySelectorAll('.hand').forEach(h => h.remove());
+
+            // Cria uma lista flat de todas as mãos por tipo de upgrade
+            const handList = [];
+            Object.keys(upgradeCounts).forEach(upgradeId => {
+                const count = upgradeCounts[upgradeId];
+                for (let i = 0; i < count; i++) {
+                    handList.push(upgradeId);
+                }
+            });
+
+            const baseRadius = 110;    // Distância do 1º anel ao centro
+            const ringSpacing = 16;   // Distância entre cada fileira/anel
+            const handsPerRingBase = 20; // Capacidade máxima de mãos na 1ª fileira
+
+            let handsPlacedInCurrentRing = 0;
+            let currentRing = 0;
+
+            handList.forEach((upgradeId, index) => {
+                // Quantas mãos cabem no anel atual (aneis mais externos cabem mais mãos)
+                const currentRingCapacity = handsPerRingBase + (currentRing * 6);
+
+                const hand = document.createElement('div');
+                hand.className = 'hand ' + upgradeId;
+
+                const img = document.createElement('img');
+                img.src = HAND_IMAGE;
+                hand.appendChild(img);
+
+                // Distância do anel atual
+                const distance = baseRadius + (currentRing * ringSpacing);
+                
+                // Ângulo uniforme dentro do anel atual
+                const angle = (handsPlacedInCurrentRing / currentRingCapacity) * 360;
+
+                hand.style.setProperty('--start-angle', `${angle}deg`);
+                hand.style.setProperty('--distance', `${distance}px`);
+                hand.style.animation = `orbitPointing 12s linear infinite`;
+
+                potatoContainer.appendChild(hand);
+
+                handsPlacedInCurrentRing++;
+                // Quando o anel atual enche, passa para a próxima fileira
+                if (handsPlacedInCurrentRing >= currentRingCapacity) {
+                    handsPlacedInCurrentRing = 0;
+                    currentRing++;
+                }
+            });
+        }
+
+        // CSS com suporte a distâncias variáveis por fileira
+        const style = document.createElement('style');
+        style.textContent = `
+            .hand {
+                position: absolute;
+                width: 32px;
+                height: 32px;
+                top: 50%;
+                left: 50%;
+                margin-top: -16px;
+                margin-left: -16px;
+                pointer-events: none;
+                z-index: 4;
+            }
+
+            .hand img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            @keyframes orbitPointing {
+                from { 
+                    transform: rotate(var(--start-angle)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
+                }
+                to { 
+                    transform: rotate(calc(var(--start-angle) + 360deg)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
         potatoBtn.addEventListener('click', (e) => {
             score += clickValue;
             updateUI();
@@ -476,15 +580,26 @@
                     score -= cost;
                     pps += addedPps;
 
+                    upgradeCounts[upgrade.id]++;
+
                     const nextCost = Math.ceil(cost * 1.15);
                     upgrade.setAttribute('data-cost', nextCost);
                     upgrade.querySelector('.cost-val').textContent = nextCost.toLocaleString('pt-BR');
 
                     updateUI();
+                    updateHands();
                     saveGame();
                 }
             });
         });
+
+        setInterval(() => {
+            const totalHands = Object.values(upgradeCounts).reduce((a, b) => a + b, 0);
+            if (totalHands > 0) {
+                score += clickValue * totalHands;
+                updateUI();
+            }
+        }, 1000);
 
         setInterval(saveGame, 5000);
         window.addEventListener('beforeunload', saveGame);
