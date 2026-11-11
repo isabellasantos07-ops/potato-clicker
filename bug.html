@@ -1,8 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Potato Clicker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #c9a87c;
+            background-image: repeating-linear-gradient(
+                90deg,
+                rgba(80, 50, 20, 0.08) 0px,
+                rgba(80, 50, 20, 0.08) 1px,
+                transparent 1px,
+                transparent 9px
+            );
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #3e2a1a;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ===== MENU ===== */
+        #menuScreen {
+            width: 480px;
+            background: #e8d5b5;
+            border: 12px solid #8b5e3c;
+            box-shadow: 
+                inset 0 0 0 3px #c49a6c,
+                inset 0 0 0 6px #5c3d26,
+                0 0 40px rgba(0,0,0,0.4);
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        #menuScreen h1 {
+            font-size: 2.6rem;
+            margin: 10px 0 8px 0;
+            text-shadow: 2px 2px 0 #8b5e3c;
+        }
+
+        #menuScreen h3 {
+            font-size: 1.1rem;
+            font-weight: normal;
+            opacity: 0.85;
+            margin-bottom: 30px;
+            color: #5c3d26;
+        }
+
+        .bakery-name {
+            background: #8b5e3c;
+            border: 3px solid #c49a6c;
+            padding: 8px 25px;
+            border-radius: 4px;
+            font-size: 1.3rem;
+            color: #f8f0e0;
+            box-shadow: 0 3px 0 #5c3d26;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .potato-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .potato-glow {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255, 220, 140, 0.5) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #startBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+
+        #startBtn img {
+            width: 190px;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.35));
+            border-radius: 50%;
+            transition: transform 0.15s;
+        }
+
+        #startBtn:hover img {
+            transform: scale(1.08);
+        }
+
+        #startBtn:active img {
+            transform: scale(0.94);
+        }
+
+        .hint {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+            color: #5c3d26;
+        }
+
+        /* ===== JOGO ===== */
+        #gameScreen {
+            display: none;
+            width: 1100px;
+            height: 620px;
+            background: #e8d5b5;
+            border: 12px solid #8b5e3c;
+            box-shadow: 
+                inset 0 0 0 3px #c49a6c,
+                inset 0 0 0 6px #5c3d26,
+                0 0 40px rgba(0,0,0,0.4);
+        }
+
+        .game-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-panel {
+            width: 380px;
+            background: radial-gradient(circle at center, #f5e6c8 0%, #d4b48c 70%);
+            border-right: 8px solid #8b5e3c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .score {
+            font-size: 2.4rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #8b5e3c;
+            margin-bottom: 5px;
+        }
+
+        .pps {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 40px;
+            color: #5c3d26;
+        }
+
+        .potato-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+
+        .potato-btn img {
+            width: 200px;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.35));
+            border-radius: 50%;
+            transition: transform 0.08s;
+        }
+
+        .potato-btn:active img {
+            transform: scale(0.94);
+        }
+
+        .floating-number {
+            position: absolute;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #fff8e7;
+            text-shadow: 2px 2px 0 #5c3d26;
+            pointer-events: none;
+            z-index: 10;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, -20px) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
+        }
+
+        .right-panel {
+            flex: 1;
+            background: #dcc9a3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .store-header {
+            background: linear-gradient(to bottom, #a67c52, #8b5e3c);
+            border-bottom: 4px solid #5c3d26;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            color: #f8f0e0;
+            text-shadow: 1px 1px 0 #3e2a1a;
+        }
+
+        .store-content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .shop-item {
+            background: linear-gradient(to bottom, #f0e0c0, #e0c9a0);
+            border: 2px solid #a67c52;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #8b5e3c;
+            transition: all 0.15s;
+        }
+
+        .shop-item:hover:not(.disabled) {
+            background: linear-gradient(to bottom, #f8ecd8, #e8d4b0);
+        }
+
+        .shop-item.disabled {
+            opacity: 0.5;
+            filter: grayscale(0.4);
+            cursor: not-allowed;
+        }
+
+        .item-name { font-weight: bold; }
+        .item-effect { font-size: 0.8rem; opacity: 0.85; font-style: italic; }
+        .item-cost { font-weight: bold; color: #b8860b; }
+
+        .save-info {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .store-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .store-content::-webkit-scrollbar-track {
+            background: #d4b48c;
+        }
+        .store-content::-webkit-scrollbar-thumb {
+            background: #8b5e3c;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENU -->
+    <div id="menuScreen">
+        <div class="bakery-name">Batataria do Papagaio Guloso</div>
+        <h1>Potato Clicker</h1>
+        <h3>Clique na batata para começar</h3>
+
+        <div class="potato-container">
+            <div class="potato-glow"></div>
+            <button id="startBtn">
+                <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Começar">
+            </button>
+        </div>
+        <div class="hint">Clique na batata para entrar</div>
+    </div>
+
+    <!-- JOGO -->
+    <div id="gameScreen">
+        <div class="game-wrapper">
+            <div class="left-panel">
+                <div class="bakery-name">Batataria do Papagaio Guloso</div>
+                <div class="score"><span id="score">0</span> 🥔</div>
+                <div class="pps">por segundo: <span id="pps">0.0</span></div>
+
+                <div class="potato-container" id="potatoContainer">
+                    <div class="potato-glow"></div>
+                    <button class="potato-btn" id="potatoBtn">
+                        <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Batata">
+                    </button>
+                </div>
+                <div class="save-info">Progresso salvo automaticamente</div>
+            </div>
+
+            <div class="right-panel">
+                <div class="store-header">Loja</div>
+                <div class="store-content">
+                    <div class="shop-item disabled" id="upgrade1" data-cost="15" data-pps="0.5">
+                        <div>
+                            <div class="item-name">Descascador Rápido</div>
+                            <div class="item-effect">+0.5 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">15</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade2" data-cost="100" data-pps="4">
+                        <div>
+                            <div class="item-name">Chef de Cozinha</div>
+                            <div class="item-effect">+4 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">100</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade3" data-cost="500" data-pps="15">
+                        <div>
+                            <div class="item-name">Plantação Industrial</div>
+                            <div class="item-effect">+15 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">500</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade4" data-cost="2000" data-pps="50">
+                        <div>
+                            <div class="item-name">Forno de Batata</div>
+                            <div class="item-effect">+50 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">2000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade5" data-cost="10000" data-pps="200">
+                        <div>
+                            <div class="item-name">Máquina de Purê</div>
+                            <div class="item-effect">+200 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">10000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade6" data-cost="50000" data-pps="800">
+                        <div>
+                            <div class="item-name">Fábrica de Fritas</div>
+                            <div class="item-effect">+800 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">50000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade7" data-cost="250000" data-pps="3500">
+                        <div>
+                            <div class="item-name">Império da Batata</div>
+                            <div class="item-effect">+3500 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">250000</span> 🥔</div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade8" data-cost="1000000" data-pps="15000">
+                        <div>
+                            <div class="item-name">Planeta Batata</div>
+                            <div class="item-effect">+15000 purê/seg</div>
+                        </div>
+                        <div class="item-cost"><span class="cost-val">1000000</span> 🥔</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
         let score = 0;
         let pps = 0;
         let clickValue = 1;
 
+        // Contagem de cada upgrade comprado
         let upgradeCounts = {
             upgrade1: 0,
             upgrade2: 0,
@@ -102,85 +476,50 @@
             setTimeout(() => floater.remove(), 800);
         }
 
-        // Atualiza as mãos organizando-as em fileiras concêntricas (anéis)
+        // Atualiza as mãos girando e apontando para a batata
         function updateHands() {
+            // Remove mãos antigas
             document.querySelectorAll('.hand').forEach(h => h.remove());
 
-            // Cria uma lista flat de todas as mãos por tipo de upgrade
-            const handList = [];
+            let handIndex = 0;
+            const totalHands = Object.values(upgradeCounts).reduce((a, b) => a + b, 0);
+
             Object.keys(upgradeCounts).forEach(upgradeId => {
                 const count = upgradeCounts[upgradeId];
                 for (let i = 0; i < count; i++) {
-                    handList.push(upgradeId);
-                }
-            });
+                    const hand = document.createElement('div');
+                    hand.className = 'hand ' + upgradeId;
 
-            const baseRadius = 110;    // Distância do 1º anel ao centro
-            const ringSpacing = 16;   // Distância entre cada fileira/anel
-            const handsPerRingBase = 20; // Capacidade máxima de mãos na 1ª fileira
+                    const img = document.createElement('img');
+                    img.src = HAND_IMAGE;
+                    hand.appendChild(img);
 
-            let handsPlacedInCurrentRing = 0;
-            let currentRing = 0;
+                    // Posição inicial em torno do centro (50% 50%)
+                    hand.style.left = `calc(50% - 25px)`;
+                    hand.style.top = `calc(50% - 25px)`;
 
-            handList.forEach((upgradeId, index) => {
-                // Quantas mãos cabem no anel atual (aneis mais externos cabem mais mãos)
-                const currentRingCapacity = handsPerRingBase + (currentRing * 6);
+                    // Define o ângulo base distribuído entre todas as mãos
+                    const startAngle = (handIndex / Math.max(totalHands, 1)) * 360;
 
-                const hand = document.createElement('div');
-                hand.className = 'hand ' + upgradeId;
+                    // Passa o ângulo inicial via variável CSS customizada
+                    hand.style.setProperty('--start-angle', `${startAngle}deg`);
+                    hand.style.animation = `orbitPointing 8s linear infinite`;
 
-                const img = document.createElement('img');
-                img.src = HAND_IMAGE;
-                hand.appendChild(img);
-
-                // Distância do anel atual
-                const distance = baseRadius + (currentRing * ringSpacing);
-                
-                // Ângulo uniforme dentro do anel atual
-                const angle = (handsPlacedInCurrentRing / currentRingCapacity) * 360;
-
-                hand.style.setProperty('--start-angle', `${angle}deg`);
-                hand.style.setProperty('--distance', `${distance}px`);
-                hand.style.animation = `orbitPointing 12s linear infinite`;
-
-                potatoContainer.appendChild(hand);
-
-                handsPlacedInCurrentRing++;
-                // Quando o anel atual enche, passa para a próxima fileira
-                if (handsPlacedInCurrentRing >= currentRingCapacity) {
-                    handsPlacedInCurrentRing = 0;
-                    currentRing++;
+                    potatoContainer.appendChild(hand);
+                    handIndex++;
                 }
             });
         }
 
-        // CSS com suporte a distâncias variáveis por fileira
+        // CSS da órbita com apontamento preciso para o centro
         const style = document.createElement('style');
         style.textContent = `
-            .hand {
-                position: absolute;
-                width: 32px;
-                height: 32px;
-                top: 50%;
-                left: 50%;
-                margin-top: -16px;
-                margin-left: -16px;
-                pointer-events: none;
-                z-index: 4;
-            }
-
-            .hand img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
-
             @keyframes orbitPointing {
                 from { 
-                    transform: rotate(var(--start-angle)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
+                    transform: rotate(var(--start-angle)) translateX(115px) rotate(90deg); 
                 }
                 to { 
-                    transform: rotate(calc(var(--start-angle) + 360deg)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
+                    transform: rotate(calc(var(--start-angle) + 360deg)) translateX(115px) rotate(90deg); 
                 }
             }
         `;
@@ -207,6 +546,7 @@
                     score -= cost;
                     pps += addedPps;
 
+                    // Aumenta a contagem do upgrade
                     upgradeCounts[upgrade.id]++;
 
                     const nextCost = Math.ceil(cost * 1.15);
@@ -220,6 +560,7 @@
             });
         });
 
+        // Mãos clicam a cada segundo
         setInterval(() => {
             const totalHands = Object.values(upgradeCounts).reduce((a, b) => a + b, 0);
             if (totalHands > 0) {
@@ -238,3 +579,7 @@
             }
         }, 100);
     </script>
+</body>
+</html>
+
+//ta tudo bugado
