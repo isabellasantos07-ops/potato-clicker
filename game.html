@@ -61,7 +61,7 @@
             border: 3px solid #c49a6c;
             padding: 8px 25px;
             border-radius: 4px;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #f8f0e0;
             box-shadow: 0 3px 0 #5c3d26;
             display: inline-block;
@@ -118,8 +118,10 @@
         /* ===== JOGO ===== */
         #gameScreen {
             display: none;
-            width: 1100px;
-            height: 620px;
+            position: relative;
+            overflow: hidden;
+            width: 1120px;
+            height: 640px;
             background: #e8d5b5;
             border: 12px solid #8b5e3c;
             box-shadow: 
@@ -135,28 +137,29 @@
         }
 
         .left-panel {
-            width: 380px;
+            width: 400px;
             background: radial-gradient(circle at center, #f5e6c8 0%, #d4b48c 70%);
             border-right: 8px solid #8b5e3c;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 20px;
+            padding: 25px 20px;
             position: relative;
         }
 
         .score {
-            font-size: 2.4rem;
+            font-size: 2.3rem;
             font-weight: bold;
             text-shadow: 2px 2px 0 #8b5e3c;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
-        .pps {
-            font-size: 0.95rem;
-            opacity: 0.85;
-            margin-bottom: 40px;
+        .stats-bar {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 35px;
             color: #5c3d26;
+            text-align: center;
         }
 
         .potato-btn {
@@ -168,14 +171,14 @@
         }
 
         .potato-btn img {
-            width: 200px;
+            width: 195px;
             filter: drop-shadow(0 8px 15px rgba(0,0,0,0.35));
             border-radius: 50%;
             transition: transform 0.08s;
         }
 
         .potato-btn:active img {
-            transform: scale(0.94);
+            transform: scale(0.92);
         }
 
         .floating-number {
@@ -194,6 +197,34 @@
             100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
         }
 
+        .bottom-controls {
+            position: absolute;
+            bottom: 12px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #5c3d26;
+        }
+
+        .control-btn {
+            background: #8b5e3c;
+            color: #f8f0e0;
+            border: 1px solid #5c3d26;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.75rem;
+        }
+
+        .control-btn:hover {
+            background: #a67c52;
+        }
+
+        /* ===== PAINEL DIREITO (LOJA E CONQUISTAS) ===== */
         .right-panel {
             flex: 1;
             background: #dcc9a3;
@@ -201,29 +232,58 @@
             flex-direction: column;
         }
 
-        .store-header {
-            background: linear-gradient(to bottom, #a67c52, #8b5e3c);
-            border-bottom: 4px solid #5c3d26;
-            padding: 12px 0;
-            text-align: center;
-            font-size: 1.6rem;
-            letter-spacing: 2px;
-            color: #f8f0e0;
+        .tabs-header {
+            display: flex;
+            background: #5c3d26;
+            border-bottom: 4px solid #3e2a1a;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(to bottom, #8b5e3c, #6e472b);
+            border: none;
+            color: #d4b48c;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(to bottom, #b88b58, #9c7040);
+            color: #fff8e7;
             text-shadow: 1px 1px 0 #3e2a1a;
         }
 
-        .store-content {
-            padding: 20px;
+        .tab-content {
+            padding: 18px;
             flex: 1;
             overflow-y: auto;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5c3d26;
+            margin: 10px 0 8px 0;
+            border-bottom: 2px solid #b89870;
+            padding-bottom: 3px;
         }
 
         .shop-item {
             background: linear-gradient(to bottom, #f0e0c0, #e0c9a0);
             border: 2px solid #a67c52;
             border-radius: 4px;
-            margin-bottom: 10px;
-            padding: 12px 15px;
+            margin-bottom: 8px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -234,36 +294,67 @@
 
         .shop-item:hover:not(.disabled) {
             background: linear-gradient(to bottom, #f8ecd8, #e8d4b0);
+            transform: translateY(-1px);
         }
 
         .shop-item.disabled {
-            opacity: 0.5;
+            opacity: 0.55;
             filter: grayscale(0.4);
             cursor: not-allowed;
         }
 
-        .item-name { font-weight: bold; }
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-icon {
+            font-size: 1.6rem;
+        }
+
+        .item-name { font-weight: bold; font-size: 1rem; }
         .item-effect { font-size: 0.8rem; opacity: 0.85; font-style: italic; }
-        .item-cost { font-weight: bold; color: #b8860b; }
+        
+        .item-right {
+            text-align: right;
+        }
+        .item-cost { font-weight: bold; color: #b8860b; font-size: 1rem; }
+        .item-count { font-size: 0.85rem; color: #5c3d26; font-weight: bold; }
 
-        .save-info {
-            position: absolute;
-            bottom: 10px;
-            left: 15px;
-            font-size: 0.75rem;
-            opacity: 0.6;
+        /* Conquistas */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
-        .store-content::-webkit-scrollbar {
-            width: 8px;
+        .achievement-card {
+            background: #cbb489;
+            border: 2px solid #8b5e3c;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.5;
         }
-        .store-content::-webkit-scrollbar-track {
-            background: #d4b48c;
+
+        .achievement-card.unlocked {
+            background: linear-gradient(to bottom, #fff3d1, #ebd5a0);
+            border-color: #d4af37;
+            opacity: 1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
-        .store-content::-webkit-scrollbar-thumb {
-            background: #8b5e3c;
-            border-radius: 4px;
-        }
+
+        .ach-icon { font-size: 1.8rem; }
+        .ach-title { font-weight: bold; font-size: 0.9rem; }
+        .ach-desc { font-size: 0.75rem; color: #5c3d26; }
+
+        /* Scrollbar */
+        .tab-content::-webkit-scrollbar { width: 8px; }
+        .tab-content::-webkit-scrollbar-track { background: #d4b48c; }
+        .tab-content::-webkit-scrollbar-thumb { background: #8b5e3c; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -289,7 +380,10 @@
             <div class="left-panel">
                 <div class="bakery-name">Batataria do Papagaio Guloso</div>
                 <div class="score"><span id="score">0</span> 🥔</div>
-                <div class="pps">por segundo: <span id="pps">0.0</span></div>
+                <div class="stats-bar">
+                    por segundo: <strong><span id="pps">0.0</span></strong> | 
+                    por clique: <strong><span id="cpc">1</span></strong>
+                </div>
 
                 <div class="potato-container" id="potatoContainer">
                     <div class="potato-glow"></div>
@@ -297,75 +391,186 @@
                         <img src="https://naturalterra.vtexassets.com/arquivos/ids/173269/batata-inglesa-unidade.jpg?v=638887886306900000" alt="Batata">
                     </button>
                 </div>
-                <div class="save-info">Progresso salvo automaticamente</div>
+
+                <div class="bottom-controls">
+                    <span>Salvo automaticamente</span>
+                    <div>
+                        <button class="control-btn" id="soundToggleBtn">🔊 Som: ON</button>
+                        <button class="control-btn" id="resetBtn">🗑️ Resetar</button>
+                    </div>
+                </div>
             </div>
 
             <div class="right-panel">
-                <div class="store-header">Loja</div>
-                <div class="store-content">
-                    <div class="shop-item disabled" id="upgrade1" data-cost="15" data-pps="0.5">
-                        <div>
-                            <div class="item-name">Descascador Rápido</div>
-                            <div class="item-effect">+0.5 purê/seg</div>
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="storeTab">🛒 Loja</button>
+                    <button class="tab-btn" data-tab="achievementsTab">🏆 Conquistas (<span id="achCounter">0/6</span>)</button>
+                </div>
+
+                <!-- ABA LOJA -->
+                <div class="tab-content active" id="storeTab">
+                    <div class="section-title">Ferramentas (Aumenta o Clique)</div>
+                    
+                    <div class="shop-item disabled" id="clickUp1" data-type="click" data-cost="25" data-power="1">
+                        <div class="item-left">
+                            <div class="item-icon">🍴</div>
+                            <div>
+                                <div class="item-name">Garfo Reforçado</div>
+                                <div class="item-effect">+1 batata por clique</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">15</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">25</span> 🥔</div>
+                            <div class="item-count">Nível: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade2" data-cost="100" data-pps="4">
-                        <div>
-                            <div class="item-name">Chef de Cozinha</div>
-                            <div class="item-effect">+4 purê/seg</div>
+                    <div class="shop-item disabled" id="clickUp2" data-type="click" data-cost="350" data-power="10">
+                        <div class="item-left">
+                            <div class="item-icon">🔪</div>
+                            <div>
+                                <div class="item-name">Faca do Chef</div>
+                                <div class="item-effect">+10 batatas por clique</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">100</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">350</span> 🥔</div>
+                            <div class="item-count">Nível: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade3" data-cost="500" data-pps="15">
-                        <div>
-                            <div class="item-name">Plantação Industrial</div>
-                            <div class="item-effect">+15 purê/seg</div>
+                    <div class="shop-item disabled" id="clickUp3" data-type="click" data-cost="5000" data-power="100">
+                        <div class="item-left">
+                            <div class="item-icon">🔨</div>
+                            <div>
+                                <div class="item-name">Amassador Dourado</div>
+                                <div class="item-effect">+100 batatas por clique</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">500</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">5000</span> 🥔</div>
+                            <div class="item-count">Nível: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade4" data-cost="2000" data-pps="50">
-                        <div>
-                            <div class="item-name">Forno de Batata</div>
-                            <div class="item-effect">+50 purê/seg</div>
+                    <div class="section-title">Produção Automática</div>
+
+                    <div class="shop-item disabled" id="upgrade1" data-type="auto" data-cost="15" data-pps="0.5">
+                        <div class="item-left">
+                            <div class="item-icon">🥔</div>
+                            <div>
+                                <div class="item-name">Descascador Rápido</div>
+                                <div class="item-effect">+0.5 purê/seg</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">2000</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">15</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade5" data-cost="10000" data-pps="200">
-                        <div>
-                            <div class="item-name">Máquina de Purê</div>
-                            <div class="item-effect">+200 purê/seg</div>
+                    <div class="shop-item disabled" id="upgrade2" data-type="auto" data-cost="100" data-pps="4">
+                        <div class="item-left">
+                            <div class="item-icon">👨‍🍳</div>
+                            <div>
+                                <div class="item-name">Chef de Cozinha</div>
+                                <div class="item-effect">+4 purê/seg</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">10000</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">100</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade6" data-cost="50000" data-pps="800">
-                        <div>
-                            <div class="item-name">Fábrica de Fritas</div>
-                            <div class="item-effect">+800 purê/seg</div>
+                    <div class="shop-item disabled" id="upgrade3" data-type="auto" data-cost="500" data-pps="15">
+                        <div class="item-left">
+                            <div class="item-icon">🚜</div>
+                            <div>
+                                <div class="item-name">Plantação Industrial</div>
+                                <div class="item-effect">+15 purê/seg</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">50000</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">500</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade7" data-cost="250000" data-pps="3500">
-                        <div>
-                            <div class="item-name">Império da Batata</div>
-                            <div class="item-effect">+3500 purê/seg</div>
+                    <div class="shop-item disabled" id="upgrade4" data-type="auto" data-cost="2000" data-pps="50">
+                        <div class="item-left">
+                            <div class="item-icon">🔥</div>
+                            <div>
+                                <div class="item-name">Forno de Batata</div>
+                                <div class="item-effect">+50 purê/seg</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">250000</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">2000</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
                     </div>
 
-                    <div class="shop-item disabled" id="upgrade8" data-cost="1000000" data-pps="15000">
-                        <div>
-                            <div class="item-name">Planeta Batata</div>
-                            <div class="item-effect">+15000 purê/seg</div>
+                    <div class="shop-item disabled" id="upgrade5" data-type="auto" data-cost="10000" data-pps="200">
+                        <div class="item-left">
+                            <div class="item-icon">⚙️</div>
+                            <div>
+                                <div class="item-name">Máquina de Purê</div>
+                                <div class="item-effect">+200 purê/seg</div>
+                            </div>
                         </div>
-                        <div class="item-cost"><span class="cost-val">1000000</span> 🥔</div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">10000</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
                     </div>
+
+                    <div class="shop-item disabled" id="upgrade6" data-type="auto" data-cost="50000" data-pps="800">
+                        <div class="item-left">
+                            <div class="item-icon">🏭</div>
+                            <div>
+                                <div class="item-name">Fábrica de Fritas</div>
+                                <div class="item-effect">+800 purê/seg</div>
+                            </div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">50000</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade7" data-type="auto" data-cost="250000" data-pps="3500">
+                        <div class="item-left">
+                            <div class="item-icon">👑</div>
+                            <div>
+                                <div class="item-name">Império da Batata</div>
+                                <div class="item-effect">+3500 purê/seg</div>
+                            </div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">250000</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="shop-item disabled" id="upgrade8" data-type="auto" data-cost="1000000" data-pps="15000">
+                        <div class="item-left">
+                            <div class="item-icon">🪐</div>
+                            <div>
+                                <div class="item-name">Planeta Batata</div>
+                                <div class="item-effect">+15000 purê/seg</div>
+                            </div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-cost"><span class="cost-val">1000000</span> 🥔</div>
+                            <div class="item-count">Qtd: <span class="count-val">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA CONQUISTAS -->
+                <div class="tab-content" id="achievementsTab">
+                    <div class="achievements-grid" id="achievementsGrid"></div>
                 </div>
             </div>
         </div>
@@ -373,60 +578,145 @@
 
 <script>
         let score = 0;
+        let gameStarted = false;
+        let totalClicks = 0;
         let pps = 0;
         let clickValue = 1;
+        let soundEnabled = true;
 
         // Bônus temporários
         let clickMultiplier = 1;
-        let discountRate = 0; // 0 = sem desconto, 0.30 = 30% de desconto
+        let discountRate = 0;
+        let discountTimeout;
+        let clickMultiplierTimeout;
 
-        let upgradeCounts = {
-            upgrade1: 0,
-            upgrade2: 0,
-            upgrade3: 0,
-            upgrade4: 0,
-            upgrade5: 0,
-            upgrade6: 0,
-            upgrade7: 0,
-            upgrade8: 0
+        let itemCounts = {
+            clickUp1: 0, clickUp2: 0, clickUp3: 0,
+            upgrade1: 0, upgrade2: 0, upgrade3: 0, upgrade4: 0,
+            upgrade5: 0, upgrade6: 0, upgrade7: 0, upgrade8: 0
         };
+
+        // Definição das Conquistas
+        const achievementsList = [
+            { id: 'first_click', icon: '👆', title: 'Primeiro Passo', desc: 'Clique na batata pela 1ª vez', condition: () => totalClicks >= 1 },
+            { id: 'hundred_club', icon: '🥔', title: 'Saco de Batatas', desc: 'Acumule 100 batatas', condition: () => score >= 100 },
+            { id: 'click_maniac', icon: '⚡', title: 'Dedo Nervoso', desc: 'Dê 100 cliques na batata', condition: () => totalClicks >= 100 },
+            { id: 'first_hire', icon: '👨‍🍳', title: 'Patrão da Cozinha', desc: 'Compre 10 itens de produção', condition: () => getTotalAutoItems() >= 10 },
+            { id: 'rich_potato', icon: '💰', title: 'Magnata do Purê', desc: 'Acumule 50.000 batatas', condition: () => score >= 50000 },
+            { id: 'industrial', icon: '🏭', title: 'Revolução Industrial', desc: 'Alcance 500 de purê/seg', condition: () => pps >= 500 }
+        ];
+        let unlockedAchievements = [];
 
         const menuScreen = document.getElementById('menuScreen');
         const gameScreen = document.getElementById('gameScreen');
         const startBtn = document.getElementById('startBtn');
-
         const scoreSpan = document.getElementById('score');
         const ppsSpan = document.getElementById('pps');
+        const cpcSpan = document.getElementById('cpc');
         const potatoBtn = document.getElementById('potatoBtn');
         const potatoContainer = document.getElementById('potatoContainer');
         const upgrades = document.querySelectorAll('.shop-item');
 
         const HAND_IMAGE = "https://em-content.zobj.net/source/apple/76/white-up-pointing-backhand-index_1f446.png";
 
+        // ===== SISTEMA DE ÁUDIO (SINTETIZADOR WEB AUDIO) =====
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(320, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.06);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            } else if (type === 'buy') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(660, now + 0.07);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'bonus') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.08);
+                osc.frequency.setValueAtTime(783.99, now + 0.16);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'bad') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.linearRampToValueAtTime(90, now + 0.25);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+        }
+
+        // Navegação entre abas (Loja / Conquistas)
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Controles de Som e Reset
+        document.getElementById('soundToggleBtn').addEventListener('click', (e) => {
+            soundEnabled = !soundEnabled;
+            e.target.textContent = soundEnabled ? '🔊 Som: ON' : '🔇 Som: OFF';
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja apagar todo o seu progresso?')) {
+                localStorage.removeItem('potatoClickerSave');
+                location.reload();
+            }
+        });
+
         startBtn.addEventListener('click', () => {
+            gameStarted = true;
             menuScreen.style.display = 'none';
             gameScreen.style.display = 'block';
             loadGame();
+            renderAchievements();
             updateHands();
             startBonusSpawner();
         });
 
+        function getTotalAutoItems() {
+            return Object.keys(itemCounts)
+                .filter(k => k.startsWith('upgrade'))
+                .reduce((acc, k) => acc + itemCounts[k], 0);
+        }
+
         function saveGame() {
+            if (!gameStarted) return;
+
             const saveData = {
-                score: score,
-                pps: pps,
-                clickValue: clickValue,
-                upgradeCounts: upgradeCounts,
-                upgrades: []
+                score, totalClicks, pps, clickValue,
+                itemCounts, unlockedAchievements,
+                upgrades: Array.from(upgrades).map(u => ({
+                    id: u.id,
+                    cost: u.getAttribute('data-cost')
+                }))
             };
-
-            upgrades.forEach(upgrade => {
-                saveData.upgrades.push({
-                    id: upgrade.id,
-                    cost: upgrade.getAttribute('data-cost')
-                });
-            });
-
             localStorage.setItem('potatoClickerSave', JSON.stringify(saveData));
         }
 
@@ -434,25 +724,38 @@
             const saved = localStorage.getItem('potatoClickerSave');
             if (!saved) return;
 
-            const saveData = JSON.parse(saved);
-            score = saveData.score || 0;
-            pps = saveData.pps || 0;
-            clickValue = saveData.clickValue || 1;
+            try {
+                const saveData = JSON.parse(saved);
+                if (!saveData || typeof saveData !== 'object') return;
 
-            if (saveData.upgradeCounts) {
-                upgradeCounts = saveData.upgradeCounts;
-            }
+                score = Number.isFinite(saveData.score) && saveData.score >= 0 ? saveData.score : 0;
+                totalClicks = Number.isFinite(saveData.totalClicks) && saveData.totalClicks >= 0 ? saveData.totalClicks : 0;
+                pps = Number.isFinite(saveData.pps) && saveData.pps >= 0 ? saveData.pps : 0;
+                clickValue = Number.isFinite(saveData.clickValue) && saveData.clickValue > 0 ? saveData.clickValue : 1;
+                unlockedAchievements = Array.isArray(saveData.unlockedAchievements)
+                    ? saveData.unlockedAchievements.filter(id => achievementsList.some(ach => ach.id === id))
+                    : [];
 
-            if (saveData.upgrades) {
-                saveData.upgrades.forEach(savedUp => {
-                    const upgrade = document.getElementById(savedUp.id);
-                    if (upgrade) {
-                        upgrade.setAttribute('data-cost', savedUp.cost);
-                    }
-                });
+                if (saveData.itemCounts && typeof saveData.itemCounts === 'object') {
+                    Object.keys(itemCounts).forEach(id => {
+                        const count = saveData.itemCounts[id];
+                        if (Number.isFinite(count) && count >= 0) itemCounts[id] = count;
+                    });
+                }
+
+                if (Array.isArray(saveData.upgrades)) {
+                    saveData.upgrades.forEach(savedUp => {
+                        const upgrade = savedUp && document.getElementById(savedUp.id);
+                        const cost = Number(savedUp && savedUp.cost);
+                        if (upgrade && Number.isFinite(cost) && cost > 0) {
+                            upgrade.setAttribute('data-cost', cost);
+                        }
+                    });
+                }
+            } catch (error) {
+                localStorage.removeItem('potatoClickerSave');
             }
             updateUI();
-            updateHands();
         }
 
         function getDiscountedCost(baseCost) {
@@ -462,6 +765,7 @@
         function updateUI() {
             scoreSpan.textContent = Math.floor(score).toLocaleString('pt-BR');
             ppsSpan.textContent = pps.toFixed(1);
+            cpcSpan.textContent = (clickValue * clickMultiplier).toLocaleString('pt-BR');
 
             upgrades.forEach(upgrade => {
                 const baseCost = parseFloat(upgrade.getAttribute('data-cost'));
@@ -469,12 +773,10 @@
                 
                 const costSpan = upgrade.querySelector('.cost-val');
                 costSpan.textContent = actualCost.toLocaleString('pt-BR');
+                costSpan.style.color = discountRate > 0 ? '#2e7d32' : '#b8860b';
 
-                if (discountRate > 0) {
-                    costSpan.style.color = '#2e7d32'; // Verde indicando desconto
-                } else {
-                    costSpan.style.color = '#b8860b';
-                }
+                const countSpan = upgrade.querySelector('.count-val');
+                if (countSpan) countSpan.textContent = itemCounts[upgrade.id] || 0;
 
                 if (score >= actualCost) {
                     upgrade.classList.remove('disabled');
@@ -482,12 +784,47 @@
                     upgrade.classList.add('disabled');
                 }
             });
+
+            checkAchievements();
+        }
+
+        // ===== CONQUISTAS =====
+        function renderAchievements() {
+            const grid = document.getElementById('achievementsGrid');
+            grid.innerHTML = '';
+            achievementsList.forEach(ach => {
+                const isUnlocked = unlockedAchievements.includes(ach.id);
+                const card = document.createElement('div');
+                card.className = `achievement-card ${isUnlocked ? 'unlocked' : ''}`;
+                card.innerHTML = `
+                    <div class="ach-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+                    <div>
+                        <div class="ach-title">${ach.title}</div>
+                        <div class="ach-desc">${ach.desc}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            document.getElementById('achCounter').textContent = `${unlockedAchievements.length}/${achievementsList.length}`;
+        }
+
+        function checkAchievements() {
+            let newlyUnlocked = false;
+            achievementsList.forEach(ach => {
+                if (!unlockedAchievements.includes(ach.id) && ach.condition()) {
+                    unlockedAchievements.push(ach.id);
+                    newlyUnlocked = true;
+                    playSound('bonus');
+                    showBanner(`🏆 CONQUISTA DESBLOQUEADA: ${ach.title}!`);
+                }
+            });
+            if (newlyUnlocked) renderAchievements();
         }
 
         function createFloatingNumber(amount, x, y, customText = null, isBad = false) {
             const floater = document.createElement('div');
             floater.className = 'floating-number';
-            floater.textContent = customText || ('+' + amount);
+            floater.textContent = customText || ('+' + amount.toLocaleString('pt-BR'));
             if (isBad) floater.style.color = '#ff4d4d';
             floater.style.left = x + 'px';
             floater.style.top = y + 'px';
@@ -498,13 +835,8 @@
         function updateHands() {
             document.querySelectorAll('.hand').forEach(h => h.remove());
 
-            const handList = [];
-            Object.keys(upgradeCounts).forEach(upgradeId => {
-                const count = upgradeCounts[upgradeId];
-                for (let i = 0; i < count; i++) {
-                    handList.push(upgradeId);
-                }
-            });
+            const totalAuto = getTotalAutoItems();
+            const visualHandsCount = Math.min(totalAuto, 80); // Limite visual para não travar o navegador
 
             const baseRadius = 110;
             const ringSpacing = 16;
@@ -513,11 +845,11 @@
             let handsPlacedInCurrentRing = 0;
             let currentRing = 0;
 
-            handList.forEach((upgradeId) => {
+            for (let i = 0; i < visualHandsCount; i++) {
                 const currentRingCapacity = handsPerRingBase + (currentRing * 6);
 
                 const hand = document.createElement('div');
-                hand.className = 'hand ' + upgradeId;
+                hand.className = 'hand';
 
                 const img = document.createElement('img');
                 img.src = HAND_IMAGE;
@@ -537,67 +869,65 @@
                     handsPlacedInCurrentRing = 0;
                     currentRing++;
                 }
-            });
+            }
         }
 
         // ===== SISTEMA DE BÔNUS QUE CAEM =====
         function spawnBonus() {
-            const types = ['discount', 'double', 'bad'];
+            const types = ['discount', 'double', 'gold', 'bad'];
             const chosenType = types[Math.floor(Math.random() * types.length)];
 
             const bonusElem = document.createElement('div');
             bonusElem.className = `falling-bonus ${chosenType}`;
 
-            // Posição horizontal aleatória no jogo
-            const randomX = Math.random() * (gameScreen.clientWidth - 60);
+            const randomX = Math.random() * (gameScreen.clientWidth - 80) + 20;
             bonusElem.style.left = randomX + 'px';
 
             let icon = '🥔';
             if (chosenType === 'discount') icon = '🏷️';
             if (chosenType === 'double') icon = '⚡';
+            if (chosenType === 'gold') icon = '✨';
             if (chosenType === 'bad') icon = '🤢';
 
             bonusElem.textContent = icon;
             gameScreen.appendChild(bonusElem);
 
-            // Clique no Bônus
             bonusElem.addEventListener('click', () => {
                 if (chosenType === 'discount') {
-                    discountRate = 0.30; // 30% de desconto
+                    playSound('bonus');
+                    discountRate = 0.30;
+                    clearTimeout(discountTimeout);
                     showBanner("🏷️ 30% DE DESCONTO NOS UPGRADES POR 15s!");
-                    setTimeout(() => {
-                        discountRate = 0;
-                        updateUI();
-                    }, 15000);
+                    discountTimeout = setTimeout(() => { discountRate = 0; updateUI(); }, 15000);
                 } else if (chosenType === 'double') {
+                    playSound('bonus');
                     clickMultiplier = 2;
+                    clearTimeout(clickMultiplierTimeout);
                     showBanner("⚡ 2X CLIQUES DUPLOS POR 15s!");
-                    setTimeout(() => {
-                        clickMultiplier = 1;
-                    }, 15000);
+                    clickMultiplierTimeout = setTimeout(() => { clickMultiplier = 1; updateUI(); }, 15000);
+                } else if (chosenType === 'gold') {
+                    playSound('bonus');
+                    const reward = Math.max(25, Math.floor(score * 0.15 + pps * 10));
+                    score += reward;
+                    showBanner(`✨ BATATA DOURADA! Ganhou +${reward.toLocaleString('pt-BR')} 🥔!`);
                 } else if (chosenType === 'bad') {
-                    const lossPercents = [0.05, 0.10, 0.25];
+                    playSound('bad');
+                    const lossPercents = [0.05, 0.10, 0.20];
                     const lossPercent = lossPercents[Math.floor(Math.random() * lossPercents.length)];
                     const lostAmount = Math.floor(score * lossPercent);
                     score -= lostAmount;
-                    showBanner(`🤢 BATATA PO podre! Perdeu ${(lossPercent * 100)}% (${lostAmount.toLocaleString('pt-BR')} 🥔)`, true);
+                    showBanner(`🤢 BATATA PODRE! Perdeu ${(lossPercent * 100)}% (${lostAmount.toLocaleString('pt-BR')} 🥔)`, true);
                 }
 
                 updateUI();
                 bonusElem.remove();
             });
 
-            // Remove o bônus se ele cair fora da tela sem ser clicado
-            setTimeout(() => {
-                if (bonusElem.parentNode) bonusElem.remove();
-            }, 6000);
+            setTimeout(() => { if (bonusElem.parentNode) bonusElem.remove(); }, 6000);
         }
 
         function startBonusSpawner() {
-            // Spawna um bônus aleatório a cada 15 a 30 segundos
-            setInterval(() => {
-                spawnBonus();
-            }, Math.random() * 15000 + 15000);
+            setInterval(() => { spawnBonus(); }, Math.random() * 12000 + 14000);
         }
 
         function showBanner(text, isBad = false) {
@@ -609,81 +939,45 @@
             setTimeout(() => banner.remove(), 3000);
         }
 
-        // Styles injetados
+        // Styles dinâmicos
         const style = document.createElement('style');
         style.textContent = `
             .hand {
-                position: absolute;
-                width: 32px;
-                height: 32px;
-                top: 50%;
-                left: 50%;
-                margin-top: -16px;
-                margin-left: -16px;
-                pointer-events: none;
-                z-index: 4;
+                position: absolute; width: 32px; height: 32px;
+                top: 50%; left: 50%; margin-top: -16px; margin-left: -16px;
+                pointer-events: none; z-index: 4;
             }
-
-            .hand img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
+            .hand img { width: 100%; height: 100%; object-fit: contain; }
 
             @keyframes orbitPointing {
-                from { 
-                    transform: rotate(var(--start-angle)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
-                }
-                to { 
-                    transform: rotate(calc(var(--start-angle) + 360deg)) translateY(calc(-1 * var(--distance))) rotate(180deg); 
-                }
+                from { transform: rotate(var(--start-angle)) translateY(calc(-1 * var(--distance))) rotate(180deg); }
+                to { transform: rotate(calc(var(--start-angle) + 360deg)) translateY(calc(-1 * var(--distance))) rotate(180deg); }
             }
 
-            /* CSS dos Bônus caindo */
             .falling-bonus {
-                position: absolute;
-                top: -50px;
-                width: 45px;
-                height: 45px;
-                font-size: 2rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                cursor: pointer;
-                z-index: 100;
+                position: absolute; top: -50px; width: 48px; height: 48px;
+                font-size: 2rem; display: flex; align-items: center; justify-content: center;
+                border-radius: 50%; cursor: pointer; z-index: 100;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
                 animation: fallDown 6s linear forwards;
             }
-
             .falling-bonus.discount { background: #ffd700; border: 2px solid #b8860b; }
             .falling-bonus.double { background: #00bfff; border: 2px solid #005f9e; }
+            .falling-bonus.gold { background: #ffae00; border: 2px solid #fff; box-shadow: 0 0 15px #ffd700; }
             .falling-bonus.bad { background: #8b0000; border: 2px solid #4a0000; }
-
-            .falling-bonus:hover {
-                transform: scale(1.2);
-            }
+            .falling-bonus:hover { transform: scale(1.2); }
 
             @keyframes fallDown {
                 0% { top: -50px; }
-                100% { top: 650px; }
+                100% { top: 660px; }
             }
 
             .bonus-banner {
-                position: absolute;
-                top: 15px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #2e7d32;
-                color: #fff;
-                padding: 10px 20px;
-                border-radius: 6px;
-                font-weight: bold;
-                z-index: 200;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-                animation: fadeInOut 3s ease forwards;
+                position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+                background: #2e7d32; color: #fff; padding: 10px 20px; border-radius: 6px;
+                font-weight: bold; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+                animation: fadeInOut 3s ease forwards; white-space: nowrap;
             }
-
             @keyframes fadeInOut {
                 0% { opacity: 0; transform: translate(-50%, -20px); }
                 15% { opacity: 1; transform: translate(-50%, 0); }
@@ -694,6 +988,8 @@
         document.head.appendChild(style);
 
         potatoBtn.addEventListener('click', (e) => {
+            playSound('click');
+            totalClicks++;
             const addedScore = clickValue * clickMultiplier;
             score += addedScore;
             updateUI();
@@ -710,29 +1006,37 @@
 
                 const baseCost = parseFloat(upgrade.getAttribute('data-cost'));
                 const actualCost = getDiscountedCost(baseCost);
-                const addedPps = parseFloat(upgrade.getAttribute('data-pps'));
+                const type = upgrade.getAttribute('data-type');
 
                 if (score >= actualCost) {
+                    playSound('buy');
                     score -= actualCost;
-                    pps += addedPps;
+                    itemCounts[upgrade.id] = (itemCounts[upgrade.id] || 0) + 1;
 
-                    upgradeCounts[upgrade.id]++;
-
-                    const nextBaseCost = Math.ceil(baseCost * 1.15);
-                    upgrade.setAttribute('data-cost', nextBaseCost);
+                    if (type === 'auto') {
+                        const addedPps = parseFloat(upgrade.getAttribute('data-pps'));
+                        pps += addedPps;
+                        const nextBaseCost = Math.ceil(baseCost * 1.15);
+                        upgrade.setAttribute('data-cost', nextBaseCost);
+                        updateHands();
+                    } else if (type === 'click') {
+                        const addedPower = parseFloat(upgrade.getAttribute('data-power'));
+                        clickValue += addedPower;
+                        const nextBaseCost = Math.ceil(baseCost * 1.45);
+                        upgrade.setAttribute('data-cost', nextBaseCost);
+                    }
 
                     updateUI();
-                    updateHands();
                     saveGame();
                 }
             });
         });
 
-        // Mãos clicando consideram o multiplicador ativado
+        // Mãos clicando a cada segundo
         setInterval(() => {
-            const totalHands = Object.values(upgradeCounts).reduce((a, b) => a + b, 0);
-            if (totalHands > 0) {
-                score += (clickValue * totalHands) * clickMultiplier;
+            const totalAuto = getTotalAutoItems();
+            if (totalAuto > 0) {
+                score += (clickValue * totalAuto) * clickMultiplier;
                 updateUI();
             }
         }, 1000);
